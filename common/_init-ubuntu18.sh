@@ -3,8 +3,6 @@
 echo "${USER} ALL=(ALL) NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo
 # Show line number when using vi(m)
 echo 'set nu' > ~/.vimrc
-# Set vi(m) as default editor
-sudo update-alternatives --set editor /usr/bin/vim.tiny
 # Create script to swap 'Esc' & 'CapsLock' keys. Makes things easier for people that use vi(m)
 echo "#!/usr/bin/env bash" > ~/_swapEsc.sh
 echo "setxkbmap -option caps:swapescape" >> ~/_swapEsc.sh
@@ -13,6 +11,8 @@ chmod 755 ~/_swapEsc.sh
 echo '#!/usr/bin/env bash' > ~/_cache-git-credentials.sh
 echo 'git config --global credential.helper store' >> ~/_cache-git-credentials.sh
 chmod 755 ~/_cache-git-credentials.sh
+# Set vi(m) as default editor
+sudo update-alternatives --set editor /usr/bin/vim.tiny
 # bash config
 echo 'set -o vi' >> .bashrc
 echo "alias h='history'" >> .bashrc
@@ -24,7 +24,7 @@ sudo apt-get update
 curl -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo apt install -y ./google-chrome-stable_current_amd64.deb
 # Get the tedious Docker (ce) install over with [https://docs.docker.com/install/linux/docker-ce/ubuntu/]
-sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common 
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" | sudo tee -a /etc/apt/sources.list.d/docker.list
 sudo apt-get update

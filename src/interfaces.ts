@@ -1,7 +1,21 @@
 export interface CommandLineArgs {
   help: boolean;
   version: boolean;
-  debug: boolean;
-  small: boolean;
-  pizzaType: string;
+  silent: boolean;
+}
+
+export interface Task {
+  description: string;
+  command?: string;
+  args?: ReadonlyArray<string>;
+  bashCommandLine?: string;
+}
+
+export interface Job {
+  serialTasks: Task[];
+  parallelTasks: Task[];
+}
+
+export interface Effort {
+  jobs: Job[];
 }
