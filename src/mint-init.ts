@@ -34,15 +34,21 @@ async.waterfall(
           {
             serialTasks: [
               {
-                description: ``,
-                bashCommandLine: ``,
+                description: `Prime 'sudo' at the beginning for unattended install`,
+                bashCommandLine: `sudo ls`,
               },
+              /*
               {
                 description: 'An Error',
                 bashCommandLine: `>&2 echo hello ; exit 1`,
               },
+*/
             ],
             parallelTasks: [
+              {
+                description: `Add docker aptitude repo for Ubuntu 'focal'`,
+                bashCommandLine: `echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" | sudo tee -a /etc/apt/sources.list.d/docker.list`,
+              },
               {
                 description: `Get WebStorm`,
                 bashCommandLine: `curl -O https://download-cf.jetbrains.com/webstorm/WebStorm-2020.3.2.tar.gz`,
@@ -93,8 +99,54 @@ async.waterfall(
             serialTasks: [],
             parallelTasks: [
               {
+                description: `Install WebStorm`,
+                bashCommandLine: `tar -C ~/ -xvf ./WebStorm-2020.3.2.tar.gz ; rm ./WebStorm-2020.3.2.tar.gz`,
+              },
+              {
+                description: `Install NVM`,
+                bashCommandLine: `bash ./install.sh`,
+              },
+              {
+                description: `Update Aptitude database`,
+                bashCommandLine: `sudo apt-get update`,
+              },
+            ],
+          },
+          {
+            serialTasks: [],
+            parallelTasks: [
+              {
+                description: `Up the stack & heap for WebStorm`,
+                bashCommandLine: `sed -i 's/Xms128m/Xms1024m/' ; sed -i 's/Xmx750m/Xmx4096m/'`,
+              },
+              {
+                description: `Install Aptitude packages`,
+                bashCommandLine: `sudo apt-get install -y ./google-chrome-stable_current_amd64.deb apt-transport-https ca-certificates curl gnupg-agent software-properties-common docker-ce docker-ce-cli containerd.io git openssh-server`,
+              },
+            ],
+          },
+          {
+            serialTasks: [],
+            parallelTasks: [
+              {
+                description: `Add $USER to 'docker' group`,
+                bashCommandLine: `sudo usermod -aG docker \${USER}`,
+              },
+              {
+                description: `Set script files permissions to 755`,
+                bashCommandLine: `sudo chmod 755 /usr/local/bin/docker-compose`,
+              },
+              {
                 description: `Set script files permissions to 755`,
                 bashCommandLine: `chmod 755 ~/_swapEsc.sh ~/_cache-git-credentials.sh`,
+              },
+              {
+                description: `Configure NVM Operation 1`,
+                bashCommandLine: `export NVM_DIR="$HOME/.nvm" ; [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh" ; nvm install 13`,
+              },
+              {
+                description: `Configure NVM Operation 2`,
+                bashCommandLine: `export NVM_DIR="$HOME/.nvm" ; [ -s "$NVM_DIR/bash_completion" ] && \\. "$NVM_DIR/bash_completion"`,
               },
             ],
           },

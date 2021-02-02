@@ -1,1 +1,12 @@
-bah-world-0.1.0.tgz
+src
+dist/*.map
+dist/*.d.ts
+node_modules
+.editorconfig
+.idea
+.eslintrc.js
+.gitignore
+.npmignore
+.prettierrc
+package-lock.json
+tsconfig.json
