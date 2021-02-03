@@ -113,20 +113,46 @@ async.waterfall(
             ],
           },
           {
-            serialTasks: [],
+            serialTasks: [
+              {
+                description: `Add apt-fast to speed apt-get - Step 1`,
+                bashCommandLine: `{ echo "deb http://ppa.launchpad.net/apt-fast/stable/ubuntu focal main" ; echo "deb-src http://ppa.launchpad.net/apt-fast/stable/ubuntu focal main" ; } | sudo tee /etc/apt/sources.list.d/apt-fast.list`,
+              },
+              {
+                description: `Add apt-fast to speed apt-get - Step 2`,
+                bashCommandLine: `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A2166B8DE8BDC3367D1901C11EE2FF37CA8DA16B`,
+              },
+              {
+                description: `Add apt-fast to speed apt-get - Step 3`,
+                bashCommandLine: `sudo apt-get update ; sudo DEBIAN_FRONTEND=noninteractive apt-get install -y apt-fast`,
+              },
+            ],
             parallelTasks: [
               {
                 description: `Up the stack & heap for WebStorm`,
-                bashCommandLine: `sed -i 's/Xms128m/Xms1024m/' ; sed -i 's/Xmx750m/Xmx4096m/'`,
+                bashCommandLine: `sed -i 's/Xms128m/Xms1024m/ ; s/Xmx750m/Xmx4096m/' ./WebStorm-203.7148.54/bin/webstorm64.vmoptions`,
               },
               {
                 description: `Install Aptitude packages`,
-                bashCommandLine: `sudo apt-get install -y ./google-chrome-stable_current_amd64.deb apt-transport-https ca-certificates curl gnupg-agent software-properties-common docker-ce docker-ce-cli containerd.io git openssh-server`,
+                bashCommandLine: `sudo apt-fast install -y ./google-chrome-stable_current_amd64.deb apt-transport-https ca-certificates curl gnupg-agent software-properties-common docker-ce docker-ce-cli containerd.io git openssh-server`,
               },
             ],
           },
           {
-            serialTasks: [],
+            serialTasks: [
+              {
+                description: `Create menu entry for WebStorm - Step 1`,
+                bashCommandLine: `{ echo "[Desktop Entry]" ; echo "Name=WebStorm" ; echo "Exec=\${HOME}/WebStorm-203.7148.54/bin/webstorm.sh" ; } | tee ~/.local/share/applications/webstorm.desktop`,
+              },
+              {
+                description: `Create menu entry for WebStorm - Step 2`,
+                bashCommandLine: `{ echo "Comment=2020.3" ; echo "Terminal=false" ; } | tee -a ~/.local/share/applications/webstorm.desktop`,
+              },
+              {
+                description: `Create menu entry for WebStorm - Step 3`,
+                bashCommandLine: `{ echo "Icon=\${HOME}/WebStorm-203.7148.54/bin/webstorm.svg" ; echo "Type=Application" ; } | tee -a ~/.local/share/applications/webstorm.desktop`,
+              },
+            ],
             parallelTasks: [
               {
                 description: `Add $USER to 'docker' group`,
