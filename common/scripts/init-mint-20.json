@@ -127,7 +127,7 @@
         },
         {
           "description": "Set script files permissions to 755",
-          "bashCommandLine": "chmod 755 ~/_swapEsc.sh ~/_cache-git-credentials.sh"
+          "bashCommandLine": "chmod 755 ~/_cache-git-credentials.sh"
         },
         {
           "description": "Configure NVM Operation 1",
