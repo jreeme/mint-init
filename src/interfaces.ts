@@ -2,6 +2,7 @@ export interface CommandLineArgs {
   help: boolean;
   version: boolean;
   silent: boolean;
+  scriptName: string;
 }
 
 export interface Task {

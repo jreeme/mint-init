@@ -1,6 +1,6 @@
 {
   "name": "mint-init",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "private": false,
   "description": "Provide one-step configuration of Linux Mint for NodeJS/TypeScript development",
   "keywords": [
@@ -37,10 +37,12 @@
     "async": "^3.2.0",
     "chalk": "^4.1.0",
     "commander": "^7.0.0",
+    "jsonfile": "^6.1.0",
     "pkginfo": "^0.4.1"
   },
   "devDependencies": {
     "@types/async": "^3.2.5",
+    "@types/jsonfile": "^6.0.0",
     "@types/node": "^14.14.22",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
