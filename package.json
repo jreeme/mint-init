@@ -1,6 +1,6 @@
 {
   "name": "mint-init",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "private": false,
   "description": "Provide one-step configuration of Linux Mint for NodeJS/TypeScript development",
   "keywords": [
