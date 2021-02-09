@@ -26,10 +26,9 @@ command
   .option('-q, --silent', 'No console output');
 
 command.addOption(
-  new Option('-s, --script-name <name>', 'Initialization Script Name').choices([
-    'init-mint-20',
-    'init-ubuntu-server-20',
-  ]),
+  new Option('-s, --script-name <name>', 'Initialization Script Name')
+    .choices(['init-mint-20', 'init-ubuntu-server-20'])
+    .makeOptionMandatory(true),
 );
 
 command.parse();
@@ -39,10 +38,6 @@ const args = <CommandLineArgs>command.opts();
 async.waterfall(
   [
     (cb: (err: Error | null, effort: Effort) => void) => {
-      if (!args.scriptName) {
-        cb(new Error(), <Effort>{});
-        return;
-      }
       const scriptFileName = path.join(__dirname, `../common/scripts/${args.scriptName}.json`);
       jsonFile.readFile(scriptFileName, cb);
     },
