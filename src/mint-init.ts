@@ -39,6 +39,10 @@ const args = <CommandLineArgs>command.opts();
 async.waterfall(
   [
     (cb: (err: Error | null, effort: Effort) => void) => {
+      if (!args.scriptName) {
+        cb(new Error(), <Effort>{});
+        return;
+      }
       const scriptFileName = path.join(__dirname, `../common/scripts/${args.scriptName}.json`);
       jsonFile.readFile(scriptFileName, cb);
     },
