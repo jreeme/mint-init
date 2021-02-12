@@ -83,7 +83,7 @@
         },
         {
           "description": "Add apt-fast to speed apt-get - Step 2",
-          "bashCommandLine": "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A2166B8DE8BDC3367D1901C11EE2FF37CA8DA16B"
+          "bashCommandLine": "sudo APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=TRUE apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A2166B8DE8BDC3367D1901C11EE2FF37CA8DA16B"
         },
         {
           "description": "Add apt-fast to speed apt-get - Step 3",
