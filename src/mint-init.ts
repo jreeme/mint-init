@@ -1,11 +1,9 @@
 #!/usr/bin/env node
-import async from 'async';
-import path from 'path';
 import { Command, Option } from 'commander';
 import pkgInfo from 'pkginfo';
-import jsonFile from 'jsonfile';
-import { CommandLineArgs, Effort } from './interfaces';
-import { _spawn } from './spawn';
+import os from 'os';
+import { init } from './init';
+import { netplanStatic } from './netplan-static';
 
 const command = new Command();
 
@@ -23,39 +21,42 @@ process.on('uncaughtException', (err: Error) => {
 command
   .version(module.exports.version, '-v, --version', 'Show program version')
   .description(module.exports.description)
-  .option('-q, --silent', 'No console output');
+  .option('-l, --list-nics', 'List network interfaces', () => {
+    const nics = os.networkInterfaces();
+    delete nics.lo;
+    const keys = Object.keys(nics);
+    keys.forEach((key) => {
+      nics[key]?.forEach((nicInfo) => {
+        if (nicInfo.family === 'IPv4') {
+          console.dir({ name: key, cidr: nicInfo.cidr, mac: nicInfo.mac });
+        }
+      });
+    });
+    process.exit();
+  });
 
-command.addOption(
-  new Option('-s, --script-name <name>', 'Initialization Script Name')
-    .choices(['init-mint-20', 'init-ubuntu-server-20'])
-    .makeOptionMandatory(true),
-);
+command
+  .command('init')
+  .addOption(
+    new Option('-s, --script-name <name>', 'Initialization Script Name')
+      .choices(['init-mint-20', 'init-ubuntu-server-20', 'install-kvm'])
+      .makeOptionMandatory(true),
+  )
+  .option('-q, --silent', 'No console output')
+  .action(init);
+
+command
+  .command('netplan-static')
+  .addOption(
+    new Option(
+      '-n, --nic-name <name of nic>',
+      `Name of network interface (use 'mint-init --list-nics')`,
+    ).makeOptionMandatory(true),
+  )
+  .option('-a, --static-ip <static ip address>', 'Static IP Address (x.x.x.x/y)')
+  .option('-g, --gateway <default gateway address>', 'Default Gateway Address')
+  .option('-s, --name-servers <name servers...>', 'DNS Name server (x.x.x.x, space separated)')
+  .option('-y, --yaml-file <yaml file>', 'NetPlan YAML file to edit (absolute path)')
+  .action(netplanStatic);
 
 command.parse();
-
-const args = <CommandLineArgs>command.opts();
-
-async.waterfall(
-  [
-    (cb: (err: Error | null, effort: Effort) => void) => {
-      const scriptFileName = path.join(__dirname, `../common/scripts/${args.scriptName}.json`);
-      jsonFile.readFile(scriptFileName, cb);
-    },
-    (effort: Effort, cb: (err: Error | null | undefined) => void) => {
-      async.eachSeries(
-        effort.jobs,
-        (job, _cb) => {
-          async.series(
-            [
-              (__cb) => async.eachSeries(job.serialTasks, _spawn, __cb),
-              (__cb) => async.each(job.parallelTasks, _spawn, __cb),
-            ],
-            _cb,
-          );
-        },
-        cb,
-      );
-    },
-  ],
-  (err) => (err ? console.error(err.message) : console.log('OK')),
-);

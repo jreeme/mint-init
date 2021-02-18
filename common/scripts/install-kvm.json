@@ -1,0 +1,18 @@
+{
+  "jobs": [
+    {
+      "serialTasks": [
+        {
+          "description": "Prime 'sudo' at the beginning for unattended install",
+          "bashCommandLine": "sudo ls"
+        }
+      ],
+      "parallelTasks": [
+        {
+          "description": "Install Aptitude packages",
+          "bashCommandLine": "sudo apt-fast install -y libvirt-clients libvirt-daemon-system virtinst qemu qemu-kvm qemu-system qemu-utils"
+        }
+      ]
+    }
+  ]
+}

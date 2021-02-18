@@ -1,6 +1,16 @@
-export interface CommandLineArgs {
+export interface NetplanStaticCommandLineArgs {
+  nicName: string;
+  yamlFile: string;
+  staticIp: string;
+  gateway: string;
+  nameServers: string[];
+}
+
+export interface InitCommandLineArgs {
+  /*
   help: boolean;
   version: boolean;
+*/
   silent: boolean;
   scriptName: string;
 }
