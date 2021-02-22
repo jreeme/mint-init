@@ -22,9 +22,6 @@ function checkErrors(errors: { arg: string; ip: string }[]): boolean {
 function checkIps(args: any, ipAddresses: string[]): boolean {
   let bailOut = false;
   ipAddresses.forEach((ipAddress) => {
-    // Yes, create a new Regex before each test
-    // const ipAddrRegex = /^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/;
-    // const ipAddrRegex = /^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/;
     if (!(cidrRegex({ exact: true }).test(ipAddress) || ipRegex({ exact: true }).test(ipAddress))) {
       console.error(`'${ipAddress}' is not a valid IP address`);
       bailOut = true;

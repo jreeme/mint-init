@@ -15,12 +15,13 @@ function streamWriteOnData(eventEmitter: EventEmitter, writeStream: WriteStream,
   eventEmitter.on('data', (chunk) => streamWrite(writeStream, chunk, color));
 }
 
-export function _spawn(task: Task, cb: (err?: Error) => void): void {
+export function __spawn(task: Task, cb: (err?: Error) => void): void {
+  streamWrite(<WriteStream>(<unknown>process.stdout), `# ${task.description}\n`, colors[2]);
   console.log(`Dummy installing: '${task.bashCommandLine}'`);
   cb();
 }
 
-export function __spawn(task: Task, cb: (err?: Error) => void): void {
+export function _spawn(task: Task, cb: (err?: Error) => void): void {
   const { command, args, bashCommandLine } = task;
   const _command = bashCommandLine ? 'bash' : <string>command;
   const _args = bashCommandLine ? ['-c', bashCommandLine] : <string[]>args;

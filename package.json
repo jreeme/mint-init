@@ -1,6 +1,6 @@
 {
   "name": "mint-init",
-  "version": "20.2.18",
+  "version": "20.2.22",
   "private": false,
   "description": "Provide one-step configuration of Linux Mint for NodeJS/TypeScript development",
   "keywords": [
@@ -38,9 +38,11 @@
     "chalk": "^4.1.0",
     "cidr-regex": "^3.1.1",
     "commander": "^7.0.0",
+    "dns-zonefile": "^0.2.6",
     "find": "^0.3.0",
     "ip-regex": "^4.3.0",
     "jsonfile": "^6.1.0",
+    "line-driver": "^1.1.9",
     "pkginfo": "^0.4.1",
     "sudo-prompt": "^9.2.1",
     "yamljs": "^0.3.0"

@@ -1,0 +1,22 @@
+{
+  "jobs": [
+    {
+      "serialTasks": [
+        {
+          "description": "Prime 'sudo' at the beginning for unattended install",
+          "bashCommandLine": "sudo echo Starting"
+        },
+        {
+          "description": "Updating Aptitude caches using apt-fast",
+          "bashCommandLine": "sudo apt-fast update -y"
+        }
+      ],
+      "parallelTasks": [
+        {
+          "description": "Install DNS using apt-fast",
+          "bashCommandLine": "sudo apt-fast install -y bind9 dnsutils"
+        }
+      ]
+    }
+  ]
+}

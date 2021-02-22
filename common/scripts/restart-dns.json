@@ -1,0 +1,12 @@
+{
+  "jobs": [
+    {
+      "parallelTasks": [
+        {
+          "description": "Restart DNS Server",
+          "bashCommandLine": "sudo systemctl restart bind9.service"
+        }
+      ]
+    }
+  ]
+}

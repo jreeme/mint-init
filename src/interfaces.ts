@@ -6,11 +6,21 @@ export interface NetplanStaticCommandLineArgs {
   nameServers: string[];
 }
 
+export interface DnsOptionsCommandLineArgs {
+  forwarders: string[];
+  recursionNets: string[];
+}
+
+export interface DnsAddZoneCommandLineArgs {
+  domainName: string;
+  networkNumber: string;
+}
+
+export interface DnsAddZoneFileCommandLineArgs extends DnsAddZoneCommandLineArgs {
+  nameServerIp: string;
+}
+
 export interface InitCommandLineArgs {
-  /*
-  help: boolean;
-  version: boolean;
-*/
   silent: boolean;
   scriptName: string;
 }

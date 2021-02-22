@@ -1,9 +1,17 @@
 #!/usr/bin/env node
 import { Command, Option } from 'commander';
 import pkgInfo from 'pkginfo';
-import os from 'os';
 import { init } from './init';
 import { netplanStatic } from './netplan-static';
+import { listNics } from './list-nics';
+import {
+  dnsAddForwardZoneFile,
+  dnsAddReverseZoneFile,
+  dnsAddZone,
+  dnsOptions,
+  dnsServerInstall,
+  dnsServerRestart,
+} from './dns';
 
 const command = new Command();
 
@@ -21,19 +29,46 @@ process.on('uncaughtException', (err: Error) => {
 command
   .version(module.exports.version, '-v, --version', 'Show program version')
   .description(module.exports.description)
-  .option('-l, --list-nics', 'List network interfaces', () => {
-    const nics = os.networkInterfaces();
-    delete nics.lo;
-    const keys = Object.keys(nics);
-    keys.forEach((key) => {
-      nics[key]?.forEach((nicInfo) => {
-        if (nicInfo.family === 'IPv4') {
-          console.dir({ name: key, cidr: nicInfo.cidr, mac: nicInfo.mac });
-        }
-      });
-    });
-    process.exit();
-  });
+  .option('-l, --list-nics', 'List network interfaces', listNics);
+
+// command.command('dns-server').option('-i, --install', 'Install DNS Server', false).action(dnsServer);
+const dnsCommand = command.command('dns');
+dnsCommand.command('install').action(dnsServerInstall);
+dnsCommand.command('restart').action(dnsServerRestart);
+dnsCommand
+  .command('options')
+  .option('-f, --forwarders <forwarders...>', 'List of upstream DNS servers to use')
+  .option('-r, --recursion-nets <recursionNets...>', 'List of allowed recursive search networks')
+  .action(dnsOptions);
+dnsCommand
+  .command('add-zone')
+  .addOption(
+    new Option('-n, --network-number <x.x.x>', 'Class-C Network number (e.g. 192.168.68)').makeOptionMandatory(true),
+  )
+  .addOption(new Option('-d, --domain-name <example.com>', 'Domain name (e.g. example.com').makeOptionMandatory(true))
+  .action(dnsAddZone);
+
+dnsCommand
+  .command('add-forward-zone-file')
+  .addOption(
+    new Option('-n, --network-number <x.x.x>', 'Class-C Network number (e.g. 192.168.68)').makeOptionMandatory(true),
+  )
+  .addOption(new Option('-d, --domain-name <example.com>', 'Domain name (e.g. example.com').makeOptionMandatory(true))
+  .addOption(
+    new Option('-s, --name-server-ip <x.x.x.x>', 'Name server address (e.g. 192.168.68.200').makeOptionMandatory(true),
+  )
+  .action(dnsAddForwardZoneFile);
+
+dnsCommand
+  .command('add-reverse-zone-file')
+  .addOption(
+    new Option('-n, --network-number <x.x.x>', 'Class-C Network number (e.g. 192.168.68)').makeOptionMandatory(true),
+  )
+  .addOption(new Option('-d, --domain-name <example.com>', 'Domain name (e.g. example.com').makeOptionMandatory(true))
+  .addOption(
+    new Option('-s, --name-server-ip <x.x.x.x>', 'Name server address (e.g. 192.168.68.200').makeOptionMandatory(true),
+  )
+  .action(dnsAddReverseZoneFile);
 
 command
   .command('init')
@@ -42,7 +77,7 @@ command
       .choices(['init-mint-20', 'init-ubuntu-server-20', 'install-kvm'])
       .makeOptionMandatory(true),
   )
-  .option('-q, --silent', 'No console output')
+  .option('-q, --silent', 'No console output', false)
   .action(init);
 
 command
