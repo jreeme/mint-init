@@ -3,18 +3,22 @@
     {
       "serialTasks": [
         {
-          "description": "Prime 'sudo' at the beginning for unattended install",
-          "bashCommandLine": "sudo ls"
+          "description": "Add apt-fast to speed apt-get - Step 1",
+          "bashCommandLine": "{ echo 'deb http://ppa.launchpad.net/apt-fast/stable/ubuntu focal main' ; echo 'deb-src http://ppa.launchpad.net/apt-fast/stable/ubuntu focal main' ; } | sudo tee /etc/apt/sources.list.d/apt-fast.list"
         }
       ],
       "parallelTasks": [
         {
-          "description": "Add docker aptitude repo for Ubuntu 'focal'",
-          "bashCommandLine": "echo \"deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable\" | sudo tee -a /etc/apt/sources.list.d/docker.list"
+          "description": "Require no password for 'sudo' execution",
+          "bashCommandLine": "echo \"${USER} ALL=(ALL) NOPASSWD: ALL\" | sudo EDITOR='tee -a' visudo"
         },
         {
           "description": "Get NVM",
           "bashCommandLine": "curl -O https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh"
+        },
+        {
+          "description": "Add docker aptitude repo for Ubuntu 'focal'",
+          "bashCommandLine": "echo 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable' | sudo tee -a /etc/apt/sources.list.d/docker.list"
         },
         {
           "description": "Get docker-compose",
@@ -23,10 +27,14 @@
         {
           "description": "Add docker gpg key",
           "bashCommandLine": "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=TRUE apt-key add -"
-        },
+        }
+      ]
+    },
+    {
+      "parallelTasks": [
         {
           "description": "Add some aliases and such to ~/.bashrc file",
-          "bashCommandLine": "{ echo \"alias h='history'\" ; echo \"alias d='docker'\" ; echo \"alias x='xrae-core'\" ; echo \"shopt -s dotglob\" ; echo \"set -o vi\" ; } | tee -a ~/.bashrc"
+          "bashCommandLine": "{ echo alias h=\\'history\\' ; echo alias f=\\'firmament\\'; echo alias d=\\'docker\\' ; echo alias x=\\'fractal-cli\\' ; echo 'shopt -s dotglob' ; echo 'set -o vi' ; } | tee -a ~/.bashrc"
         },
         {
           "description": "Set vi(m) as default editor",
@@ -34,76 +42,73 @@
         },
         {
           "description": "Create script to enable 'git' credential caching",
-          "bashCommandLine": "{ echo \"#!/usr/bin/env bash\" ; echo \"git config --global credential.helper store\" ; } | tee ~/_cache-git-credentials.sh"
+          "bashCommandLine": "{ echo '#!/usr/bin/env bash' ; echo 'git config --global credential.helper store' ; } | tee ~/_cache-git-credentials.sh"
         },
         {
           "description": "Show line number when using vi(m)",
           "bashCommandLine": "echo 'set nu' | tee ~/.vimrc"
         },
         {
-          "description": "Require no password for 'sudo' execution",
-          "bashCommandLine": "echo \"${USER} ALL=(ALL) NOPASSWD: ALL\" | sudo EDITOR='tee -a' visudo"
-        }
-      ]
-    },
-    {
-      "serialTasks": [],
-      "parallelTasks": [
-        {
           "description": "Install NVM",
           "bashCommandLine": "bash ./install.sh"
-        },
-        {
-          "description": "Update Aptitude database",
-          "bashCommandLine": "sudo apt-get update"
         }
       ]
     },
     {
       "serialTasks": [
         {
-          "description": "Add apt-fast to speed apt-get - Step 1",
-          "bashCommandLine": "{ echo \"deb http://ppa.launchpad.net/apt-fast/stable/ubuntu focal main\" ; echo \"deb-src http://ppa.launchpad.net/apt-fast/stable/ubuntu focal main\" ; } | sudo tee /etc/apt/sources.list.d/apt-fast.list"
+          "description": "Write NVM environment variables to top of ~/.bashrc",
+          "bashCommandLine": "sed -i '1i export NVM_DIR=\"$HOME/.nvm\"\\n[ -s \"$NVM_DIR/nvm.sh\" ] && \\\\. \"$NVM_DIR/nvm.sh\"\\n[ -s \"$NVM_DIR/bash_completion\" ] && \\\\. \"$NVM_DIR/bash_completion\"' ~/.bashrc"
         },
         {
           "description": "Add apt-fast to speed apt-get - Step 2",
-          "bashCommandLine": "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A2166B8DE8BDC3367D1901C11EE2FF37CA8DA16B"
+          "bashCommandLine": "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys A2166B8DE8BDC3367D1901C11EE2FF37CA8DA16B"
         },
         {
           "description": "Add apt-fast to speed apt-get - Step 3",
           "bashCommandLine": "sudo apt-get update ; sudo DEBIAN_FRONTEND=noninteractive apt-get install -y apt-fast"
         }
-      ],
-      "parallelTasks": [
-        {
-          "description": "Install Aptitude packages",
-          "bashCommandLine": "sudo apt-fast install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common docker-ce docker-ce-cli containerd.io git openssh-server"
-        }
       ]
     },
     {
       "serialTasks": [
+        {
+          "description": "Stop Unattended Upgrades service",
+          "bashCommandLine": "sudo service unattended-upgrades stop"
+        },
+        {
+          "description": "Uninstall Unattended Upgrades service",
+          "bashCommandLine": "sudo apt-fast autoremove --purge -y unattended-upgrades"
+        }
       ],
+      "parallelTasks": [
+        {
+          "description": "Install Aptitude packages",
+          "bashCommandLine": "sudo apt-fast install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common docker-ce docker-ce-cli containerd.io git openssh-server build-essential cmake"
+        },
+        {
+          "description": "Set docker-compose permissions to 755",
+          "bashCommandLine": "sudo chmod 755 /usr/local/bin/docker-compose"
+        },
+        {
+          "description": "Set _cache-git-credentials.sh permissions to 755",
+          "bashCommandLine": "chmod 755 ~/_cache-git-credentials.sh"
+        },
+        {
+          "description": "Install latest LTS version of NodeJs",
+          "bashCommandLine": "nvm install --lts"
+        }
+      ]
+    },
+    {
       "parallelTasks": [
         {
           "description": "Add $USER to 'docker' group",
           "bashCommandLine": "sudo usermod -aG docker ${USER}"
         },
         {
-          "description": "Set script files permissions to 755",
-          "bashCommandLine": "sudo chmod 755 /usr/local/bin/docker-compose"
-        },
-        {
-          "description": "Set script files permissions to 755",
-          "bashCommandLine": "chmod 755 ~/_cache-git-credentials.sh"
-        },
-        {
-          "description": "Configure NVM Operation 1",
-          "bashCommandLine": "export NVM_DIR=\"$HOME/.nvm\" ; [ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\" ; nvm install 13"
-        },
-        {
-          "description": "Configure NVM Operation 2",
-          "bashCommandLine": "export NVM_DIR=\"$HOME/.nvm\" ; [ -s \"$NVM_DIR/bash_completion\" ] && \\. \"$NVM_DIR/bash_completion\""
+          "description": "Revert to 'npm@6.14.15'",
+          "bashCommandLine": "npm install -g npm@6.14.15"
         }
       ]
     }
